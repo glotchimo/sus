@@ -3,10 +3,10 @@
 
 typedef int TokenType;
 
-struct Token {
-    TokenType Type;
-    char* Literal;
-};
+typedef struct {
+    TokenType type;
+    char *literal;
+} Token;
 
 enum {
     ILLEGAL = -2,
@@ -39,10 +39,10 @@ enum {
 };
 
 typedef struct {
-    char* ident;
+    char *ident;
     TokenType type;
 } keyword;
 
-TokenType LookupIdent(char* ident);
+TokenType lookup_ident(char *ident);
 
 #endif

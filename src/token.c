@@ -11,8 +11,8 @@ keyword keywords[] = {
     {"else", ELSE},
     {"return", RETURN}};
 
-TokenType LookupIdent(char* ident) {
-    for (int i = 0; i < sizeof(keywords); i++)
+TokenType lookup_ident(char *ident) {
+    for (int i = 0; i < sizeof(keywords) / sizeof(keyword); i++)
         if (strcmp(keywords[i].ident, ident) == 0)
             return keywords[i].type;
 
