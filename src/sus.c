@@ -1,14 +1,15 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "stdio.h"
+#include "stdlib.h"
 
 #include "lexer.h"
+#include "parser.h"
 #include "token.h"
 
 void loop();
 char *read_line();
 
 int main(int argc, char *argv[]) {
-    fprintf(stdout, "--- libmonkey - v0.0.0 - test shell ---\n");
+    fprintf(stdout, "--- sus - v0.0.0 - test shell ---\n");
     loop();
 }
 
@@ -16,14 +17,14 @@ void loop() {
     char *line;
 
     do {
-        printf("🐒 ");
+        printf("ඞ ");
         line = read_line();
 
-        Lexer *l = lexer_new(line);
-        Token t = lexer_next_token(l);
-        while (t.type != EoF) {
-            fprintf(stdout, "%d ", t.type);
-            t = lexer_next_token(l);
+        lexer_t *l = lexer_new(line);
+        parser_t *p = parser_new(l);
+        parser_parse_program(p);
+        for (int i = 0; i < 256; i++) {
+            fprintf(stdout, "%s", p->errors[i]);
         }
         fprintf(stdout, "\n");
 

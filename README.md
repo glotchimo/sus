@@ -1,7 +1,11 @@
-# libmonkey
+# sus
 
-A C++ implementation of the Monkey language.
+A programming language inspired by the popular "Among Us" game.
 
-## Todos
+## Why?
 
--   Implement an efficient hash map
+To learn parser/compiler/language theory basics on stream.
+
+## Things to note
+
+Because it is Among Us-themed, there are some
