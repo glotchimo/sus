@@ -1,20 +1,24 @@
+#include "stdbool.h"
+#include "stdlib.h"
+#include "string.h"
+
 #include "lexer.h"
-
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "token.h"
 
-Lexer *lexer_new(char *input) {
-    Lexer *l = (Lexer *)malloc(sizeof(Lexer));
+lexer_t *lexer_new(char *input) {
+    lexer_t *l = (lexer_t *)malloc(sizeof(lexer_t));
     l->input = input;
     lexer_read_char(l);
     return l;
 }
 
-Token lexer_next_token(Lexer *l) {
-    Token t;
+void lexer_destroy(lexer_t *l) {
+    free(l->input);
+    free(l);
+}
+
+token_t lexer_next_token(lexer_t *l) {
+    token_t t;
 
     lexer_skip_whitespace(l);
 
@@ -65,11 +69,31 @@ Token lexer_next_token(Lexer *l) {
         break;
 
     case '<':
-        set_token(&t, LT, l->ch);
+        if (lexer_peek_char(l) == '=') {
+            char ch = l->ch;
+            lexer_read_char(l);
+            char *literal = (char *)malloc(2);
+            literal[0] = ch;
+            literal[1] = l->ch;
+            t.type = LEQ;
+            t.literal = literal;
+        } else {
+            set_token(&t, LT, l->ch);
+        }
         break;
 
     case '>':
-        set_token(&t, GT, l->ch);
+        if (lexer_peek_char(l) == '=') {
+            char ch = l->ch;
+            lexer_read_char(l);
+            char *literal = (char *)malloc(2);
+            literal[0] = ch;
+            literal[1] = l->ch;
+            t.type = GEQ;
+            t.literal = literal;
+        } else {
+            set_token(&t, GT, l->ch);
+        }
         break;
 
     case ';':
@@ -94,6 +118,14 @@ Token lexer_next_token(Lexer *l) {
 
     case ')':
         set_token(&t, RPAREN, l->ch);
+        break;
+
+    case '[':
+        set_token(&t, LBRACKET, l->ch);
+        break;
+
+    case ']':
+        set_token(&t, RBRACKET, l->ch);
         break;
 
     case 0:
@@ -121,7 +153,7 @@ Token lexer_next_token(Lexer *l) {
     return t;
 }
 
-void lexer_read_char(Lexer *l) {
+void lexer_read_char(lexer_t *l) {
     if (l->readPosition >= strlen(l->input)) {
         l->ch = 0;
     } else {
@@ -132,7 +164,7 @@ void lexer_read_char(Lexer *l) {
     l->readPosition = l->readPosition + 1;
 }
 
-char *lexer_read_ident(Lexer *l) {
+char *lexer_read_ident(lexer_t *l) {
     int position = l->position;
 
     while (is_letter(l->ch)) {
@@ -148,7 +180,7 @@ char *lexer_read_ident(Lexer *l) {
     return slice;
 }
 
-char *lexer_read_num(Lexer *l) {
+char *lexer_read_num(lexer_t *l) {
     int position = l->position;
 
     while (is_digit(l->ch)) {
@@ -163,7 +195,7 @@ char *lexer_read_num(Lexer *l) {
     return slice;
 }
 
-char lexer_peek_char(Lexer *l) {
+char lexer_peek_char(lexer_t *l) {
     if (l->readPosition >= sizeof(l->input)) {
         return 0;
     } else {
@@ -171,7 +203,7 @@ char lexer_peek_char(Lexer *l) {
     }
 }
 
-void lexer_skip_whitespace(Lexer *l) {
+void lexer_skip_whitespace(lexer_t *l) {
     while (l->ch == ' ' || l->ch == '\t' || l->ch == '\n' || l->ch == '\r') {
         lexer_read_char(l);
     }
@@ -185,7 +217,7 @@ bool is_digit(char ch) {
     return '0' <= ch && ch <= '9';
 }
 
-void set_token(Token *token, TokenType type, char ch) {
+void set_token(token_t *token, token_type_t type, char ch) {
     char *literal = (char *)malloc(1);
     literal[0] = ch;
     token->type = type;
