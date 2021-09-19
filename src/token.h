@@ -1,14 +1,7 @@
-#ifndef TOKEN_H
-#define TOKEN_H
+#ifndef SUS_TOKEN_H
+#define SUS_TOKEN_H
 
-typedef int TokenType;
-
-typedef struct {
-    TokenType type;
-    char *literal;
-} Token;
-
-enum {
+typedef enum {
     ILLEGAL = -2,
     EoF = -1,
     IDENT = 0,
@@ -23,26 +16,41 @@ enum {
     GT,
     EQ,
     NOT_EQ,
+    LEQ,
+    GEQ,
     COMMA,
     SEMICOLON,
     LPAREN,
     RPAREN,
     LBRACE,
     RBRACE,
-    FUNCTION,
-    LET,
-    TRUE,
-    FALSE,
-    IF,
-    ELSE,
-    RETURN
-};
+    LBRACKET,
+    RBRACKET,
+    TASK,
+    VOTE,
+    EJECT,
+    CREWMATE,
+    IMPOSTOR,
+    CARDSWIPE,
+    TOOFAST,
+    VENT,
+    MEDSCAN
+} token_type_t;
 
 typedef struct {
     char *ident;
-    TokenType type;
+    token_type_t type;
 } keyword;
 
-TokenType lookup_ident(char *ident);
+typedef struct {
+    token_type_t type;
+    char *literal;
+} token_t;
+
+token_type_t lookup_ident(char *ident);
+
+token_t token_create(token_type_t type, char *literal);
+token_t *token_duplicate(token_t *t);
+void token_destroy(token_t *t);
 
 #endif
